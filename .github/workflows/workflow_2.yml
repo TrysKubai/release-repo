@@ -14,10 +14,9 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
         with:
-          tag_name: $ {{ github.event.client_payload.releaseTag }}
-          release_name: $ {{ github.event.client_payload.releaseTag }}
+          tag_name: ${{ github.event.client_payload.releaseTag }}
+          release_name: ${{ github.event.client_payload.releaseTag }}
           body: |
             New release.
           draft: false
@@ -25,14 +24,51 @@ jobs:
 
       - name: Download assets
         run: |
-          # Download assets from the other repository
-          # Replace 'owner/repo' with the actual repository name
-          # Replace 'latest' with the desired release version or use another mechanism to determine the latest release
-          # Replace 'asset_name' with the name of the asset you want to download
           curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/latest.yml"
+          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/build-debug.yml"
+          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe"
+          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe.blockmap"
+        # curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe"
+        # curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe.blockmap"
 
       - name: Attach downloaded assets to release
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-release-asset@v1
         with:
-          name: downloaded-assets
-          path: ./latest.yml
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./latest.yml
+          asset_name: latest.yml
+
+      - name: Attach downloaded assets to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build-debug.yml
+          asset_name: build-debug.yml
+
+      - name: Attach downloaded assets to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe
+          asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe
+
+      - name: Attach downloaded assets to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe.blockmap
+          asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe.blockmap
+
+      # - name: Attach downloaded assets to release
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe
+      #     asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe
+
+      # - name: Attach downloaded assets to release
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe.blockmap
+      #     asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe.blockmap
