@@ -1,9 +1,37 @@
 name: workflow_02
 on: [repository_dispatch]
+
 jobs:
-  cypress-run:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "Triggering Wokflow 2"
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Create a new release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: $ {{ github.event.client_payload.releaseTag }}
+          release_name: $ {{ github.event.client_payload.releaseTag }}
+          body: |
+            New release.
+          draft: false
+          prerelease: false
+
+      - name: Download assets
+        run: |
+          # Download assets from the other repository
+          # Replace 'owner/repo' with the actual repository name
+          # Replace 'latest' with the desired release version or use another mechanism to determine the latest release
+          # Replace 'asset_name' with the name of the asset you want to download
+          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/latest.yml"
+
+      - name: Attach downloaded assets to release
+        uses: actions/upload-artifact@v2
+        with:
+          name: downloaded-assets
+          path: ./latest.yml
