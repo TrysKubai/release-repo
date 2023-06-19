@@ -1,15 +1,15 @@
-name: get_github_token
-description: Get Github_token to make a releas
+name: Get GitHub Token
+description: Get GitHub Token to make a release
 
 runs:
   using: composite
   steps:
-    - name: Get release-token
+    - name: Get Release Token
       shell: bash
       run: |
-        echo "tokenas" >> $GITHUB_OUTPUT
+        echo "${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
 outputs:
   release-github-token:
-    description: Github_token of the release-repo
-    value: "tokenas"
+    description: GitHub Token of the release repo
+    value: ${{ env.GITHUB_TOKEN }}
