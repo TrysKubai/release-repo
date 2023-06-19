@@ -1,24 +1,12 @@
 name: get_github_token
-description: Get Github_token to make a release
-inputs:
-  tag:
-    description: Release tag
-    required: true
-  repository:
-    description: The repository (in "owner/repo" format) to look for the tag
-    required: true
-  auth:
-    description: Auth token to use
-    required: true
+description: Get Github_token to make a releas
 
 runs:
   using: composite
   steps:
-    - name: Get URL
-      id: get-url
+    - name: Get release-token
       shell: bash
       run: |
-        release_id=$(curl -sSL -H "Authorization: Bearer ${{ inputs.auth }}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${{ inputs.repository }}/releases/tags/${{ inputs.tag }}" | jq -r ".id")
         echo ${{ secrets.GITHUB_TOKEN }} >> $GITHUB_OUTPUT
 
 outputs:
