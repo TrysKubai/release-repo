@@ -7,9 +7,9 @@ runs:
     - name: Get release-token
       shell: bash
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} >> $GITHUB_OUTPUT
+        echo "tokenas" >> $GITHUB_OUTPUT
 
 outputs:
   release-github-token:
     description: Github_token of the release-repo
-    value: ${{ secrets.GITHUB_TOKEN }}
+    value: "tokenas"
