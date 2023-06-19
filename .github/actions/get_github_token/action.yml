@@ -1,4 +1,4 @@
-name: Get Github_token
+name: get_github_token
 description: Get Github_token to make a release
 inputs:
   tag:
