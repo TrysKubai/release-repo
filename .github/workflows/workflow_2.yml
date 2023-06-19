@@ -1,74 +1,27 @@
-name: workflow_02
-on: [repository_dispatch]
+name: Get Github_token
+description: Get Github_token to make a release
+inputs:
+  tag:
+    description: Release tag
+    required: true
+  repository:
+    description: The repository (in "owner/repo" format) to look for the tag
+    required: true
+  auth:
+    description: Auth token to use
+    required: true
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+runs:
+  using: composite
+  steps:
+    - name: Get URL
+      id: get-url
+      shell: bash
+      run: |
+        release_id=$(curl -sSL -H "Authorization: Bearer ${{ inputs.auth }}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${{ inputs.repository }}/releases/tags/${{ inputs.tag }}" | jq -r ".id")
+        echo ${{ secrets.GITHUB_TOKEN }} >> $GITHUB_OUTPUT
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Create a new release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.client_payload.releaseTag }}
-          release_name: ${{ github.event.client_payload.releaseTag }}
-          body: |
-            New release.
-          draft: false
-          prerelease: false
-
-      - name: Download assets
-        run: |
-          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/latest.yml"
-          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/build-debug.yml"
-          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe"
-          curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe.blockmap"
-        # curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe"
-        # curl -OL "https://github.com/TrysKubai/komandaX/releases/latest/download/Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe.blockmap"
-
-      - name: Attach downloaded assets to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./latest.yml
-          asset_name: latest.yml
-
-      - name: Attach downloaded assets to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build-debug.yml
-          asset_name: build-debug.yml
-
-      - name: Attach downloaded assets to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe
-          asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe
-
-      - name: Attach downloaded assets to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe.blockmap
-          asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-x64.exe.blockmap
-
-      # - name: Attach downloaded assets to release
-      #   uses: actions/upload-release-asset@v1
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe
-      #     asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe
-
-      # - name: Attach downloaded assets to release
-      #   uses: actions/upload-release-asset@v1
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe.blockmap
-      #     asset_name: Three-Cubes-Game-${{ github.event.client_payload.releaseTag }}-ia32.exe.blockmap
+outputs:
+  release-github-token:
+    description: Github_token of the release-repo
+    value: ${{ secrets.GITHUB_TOKEN }}
